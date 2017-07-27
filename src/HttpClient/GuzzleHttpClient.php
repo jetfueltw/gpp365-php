@@ -24,10 +24,6 @@ class GuzzleHttpClient implements HttpClientInterface
             'json' => $data,
         ]);
 
-        //var_dump($response->getStatusCode());
-        //var_dump($response->getHeaders());
-        //var_dump($response->getBody());
-
-        return json_decode($response->getBody(), true);
+        return $response->getBody()->getContents();
     }
 }

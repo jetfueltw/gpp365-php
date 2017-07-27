@@ -4,11 +4,35 @@ namespace Jetfuel\Gpp365;
 
 class Signature
 {
+    /**
+     * @param array $payload
+     * @param string $secret
+     * @return string
+     */
     public static function generate(array $payload, $secret)
     {
-        $baseString = self::buildParameterString($payload).'&key='.$secret;
+        $baseString = self::buildParameterString($payload).'key='.$secret;
 
         return self::md5Hash($baseString);
+    }
+
+    /**
+     * @param array $payload
+     * @param string $secret
+     * @return bool
+     */
+    public static function validate(array $payload, $secret)
+    {
+        if (!isset($payload['sign'])) {
+            return false;
+        }
+
+        $signature = $payload['sign'];
+        unset($payload['sign']);
+
+        $baseString = self::buildParameterString($payload).'key='.$secret;
+
+        return self::md5Hash($baseString) === $signature;
     }
 
     private static function buildParameterString(array $parameters)
@@ -20,7 +44,7 @@ class Signature
             $parameterString .= $key.'='.$value.'&';
         }
 
-        return rtrim($parameterString, '&');
+        return $parameterString;
     }
 
     private static function md5Hash($data)

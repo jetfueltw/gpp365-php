@@ -9,6 +9,16 @@ class DigitalPayment extends Payment
         parent::__construct($appId, $appSecret, $apiBaseUrl);
     }
 
+    /**
+     * @param string $tradeNo
+     * @param int $provider
+     * @param float $amount
+     * @param int $userId
+     * @param int $device
+     * @param string $ip
+     * @param string $notifyUrl
+     * @return array
+     */
     public function order($tradeNo, $provider, $amount, $userId, $device, $ip, $notifyUrl)
     {
         $payload = $this->signPayload([
@@ -22,9 +32,14 @@ class DigitalPayment extends Payment
             'notifyUrl'  => $notifyUrl,
         ]);
 
-        return $this->httpClient->post('pay/qrcode/v1', $payload);
+        return json_decode($this->httpClient->post('pay/qrcode/v1', $payload), true);
     }
 
+    /**
+     * @param string $tradeNo
+     * @param int $provider
+     * @return array
+     */
     public function check($tradeNo, $provider)
     {
         $payload = $this->signPayload([
@@ -32,6 +47,6 @@ class DigitalPayment extends Payment
             'payType' => $provider,
         ]);
 
-        return $this->httpClient->post('query/v1', $payload);
+        return json_decode($this->httpClient->post('query/v1', $payload), true);
     }
 }

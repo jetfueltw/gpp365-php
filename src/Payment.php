@@ -2,6 +2,7 @@
 
 namespace Jetfuel\Gpp365;
 
+use Jetfuel\Gpp365\HttpClient\CurlHttpClient;
 use Jetfuel\Gpp365\HttpClient\GuzzleHttpClient;
 
 class Payment
@@ -32,25 +33,11 @@ class Payment
     {
         $this->appId = $appId;
         $this->appSecret = $appSecret;
-        $this->apiBaseUrl = empty($apiBaseUrl) ? $this::API_BASE_URL : $apiBaseUrl;
+        $this->apiBaseUrl = empty($apiBaseUrl) ? $this::API_BASE_URL : rtrim($apiBaseUrl, '/').'/';
 
-        $this->httpClient = new GuzzleHttpClient($this->apiBaseUrl);
+        //$this->httpClient = new GuzzleHttpClient($this->apiBaseUrl);
+        $this->httpClient = new CurlHttpClient($this->apiBaseUrl);
     }
-
-    //public function query($tradeNo, $payType)
-    //{
-    //    $payload = [
-    //        'merchant' => $this->appId,
-    //        'tradeNo'  => $tradeNo,
-    //        'payType'  => $payType,
-    //        'reqTime'  => $this->getShanghaiCurrentTime(),
-    //    ];
-    //
-    //    $signature = Signature::generate($payload, $this->appSecret);
-    //    $payload['sign'] = $signature;
-    //
-    //    return $this->httpClient->post('query/v1', $payload);
-    //}
 
     protected function signPayload($payload)
     {

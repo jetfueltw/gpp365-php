@@ -4,9 +4,9 @@ namespace Jetfuel\Gpp365;
 
 class DigitalPayment extends Payment
 {
-    public function __construct($appId, $appSecret, $apiBaseUrl = null)
+    public function __construct($appId, $appSecret, $baseApiUrl = null)
     {
-        parent::__construct($appId, $appSecret, $apiBaseUrl);
+        parent::__construct($appId, $appSecret, $baseApiUrl);
     }
 
     /**
@@ -37,14 +37,14 @@ class DigitalPayment extends Payment
 
     /**
      * @param string $tradeNo
-     * @param int $provider
+     * @param int $channel
      * @return array
      */
-    public function check($tradeNo, $provider)
+    public function check($tradeNo, $channel)
     {
         $payload = $this->signPayload([
             'tradeNo' => $tradeNo,
-            'payType' => $provider,
+            'payType' => $channel,
         ]);
 
         return json_decode($this->httpClient->post('query/v1', $payload), true);

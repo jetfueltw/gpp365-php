@@ -2,7 +2,7 @@
 
 use Jetfuel\Gpp365\Constants\Bank;
 use Jetfuel\Gpp365\Constants\Device;
-use Jetfuel\Gpp365\Constants\Provider;
+use Jetfuel\Gpp365\Constants\Channel;
 use Jetfuel\Gpp365\BankPayment;
 use Jetfuel\Gpp365\DigitalPayment;
 use Jetfuel\Gpp365\Signature;
@@ -12,7 +12,7 @@ class Test extends PHPUnit_Framework_TestCase
 {
     private $appId     = '1496219556263';
     private $appSecret = 'UigNOCfqB6Kt';
-    private $channel   = Provider::WECHAT;
+    private $channel   = Channel::WECHAT;
     private $bank      = Bank::ABOC;
     private $device    = Device::WEB;
 
@@ -107,7 +107,7 @@ class Test extends PHPUnit_Framework_TestCase
     {
         $payload = [
             'tradeNo'    => '1501137459',
-            'payType'    => Provider::WECHAT,
+            'payType'    => Channel::WECHAT,
             'amount'     => 100,
             'curType'    => 'CNY',
             'userId'     => 1,
@@ -127,7 +127,7 @@ class Test extends PHPUnit_Framework_TestCase
     {
         $payload = [
             'tradeNo'     => '1501145550',
-            'payType'     => Provider::WECHAT,
+            'payType'     => Channel::WECHAT,
             'amount'      => '100.00',
             'curType'     => 'CNY',
             'merchant'    => '1496219556263',

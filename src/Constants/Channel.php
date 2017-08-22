@@ -2,7 +2,7 @@
 
 namespace Jetfuel\Gpp365\Constants;
 
-class Provider
+class Channel
 {
     /**
      * 微信支付

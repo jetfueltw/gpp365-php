@@ -2,12 +2,12 @@
 
 namespace Jetfuel\Gpp365;
 
-use Jetfuel\Gpp365\HttpClient\CurlHttpClient;
 use Jetfuel\Gpp365\HttpClient\GuzzleHttpClient;
 
 class Payment
 {
-    const API_BASE_URL = 'https://test-apiproxy.gpp365.net/';
+    const BASE_API_URL = 'https://test-apiproxy.gpp365.net/';
+    const SERVICE_TIME_ZONE = 'Asia/Shanghai';
 
     /**
      * @var string
@@ -22,34 +22,33 @@ class Payment
     /**
      * @var string
      */
-    protected $apiBaseUrl;
+    protected $baseApiUrl;
 
     /**
      * @var \Jetfuel\Gpp365\HttpClient\HttpClientInterface
      */
     protected $httpClient;
 
-    protected function __construct($appId, $appSecret, $apiBaseUrl)
+    protected function __construct($appId, $appSecret, $baseApiUrl)
     {
         $this->appId = $appId;
         $this->appSecret = $appSecret;
-        $this->apiBaseUrl = empty($apiBaseUrl) ? $this::API_BASE_URL : rtrim($apiBaseUrl, '/').'/';
+        $this->baseApiUrl = empty($baseApiUrl) ? $this::BASE_API_URL : rtrim($baseApiUrl, '/').'/';
 
-        //$this->httpClient = new GuzzleHttpClient($this->apiBaseUrl);
-        $this->httpClient = new CurlHttpClient($this->apiBaseUrl);
+        $this->httpClient = new GuzzleHttpClient($this->baseApiUrl);
     }
 
     protected function signPayload($payload)
     {
         $payload['merchant'] = $this->appId;
-        $payload['reqTime'] = $this->getShanghaiCurrentTime();
+        $payload['reqTime'] = $this->getCurrentTime();
         $payload['sign'] = Signature::generate($payload, $this->appSecret);
 
         return $payload;
     }
 
-    protected function getShanghaiCurrentTime()
+    protected function getCurrentTime()
     {
-        return (new \DateTime('now', new \DateTimeZone('Asia/Shanghai')))->format('Y-m-d H:i:s');
+        return (new \DateTime('now', new \DateTimeZone(self::SERVICE_TIME_ZONE)))->format('Y-m-d H:i:s');
     }
 }

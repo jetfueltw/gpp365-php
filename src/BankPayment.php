@@ -4,9 +4,9 @@ namespace Jetfuel\Gpp365;
 
 class BankPayment extends Payment
 {
-    public function __construct($appId, $appSecret, $apiBaseUrl = null)
+    public function __construct($appId, $appSecret, $baseApiUrl = null)
     {
-        parent::__construct($appId, $appSecret, $apiBaseUrl);
+        parent::__construct($appId, $appSecret, $baseApiUrl);
     }
 
     /**

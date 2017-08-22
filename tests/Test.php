@@ -85,9 +85,8 @@ class Test extends PHPUnit_Framework_TestCase
         $url = trim(str_replace('window.location = ', '', $url), '"');
 
         $response = $client->get($url);
-        $result = $response->getBody()->getContents();
 
-        $this->assertContains('name="plat_encrypt_data"', $result);
+        $this->assertEquals(200, $response->getStatusCode());
 
         return $payload['tradeNo'];
     }

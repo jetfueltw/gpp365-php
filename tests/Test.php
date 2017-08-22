@@ -10,18 +10,18 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class Test extends PHPUnit_Framework_TestCase
 {
-    private $appId = '1496219556263';
+    private $appId     = '1496219556263';
     private $appSecret = 'UigNOCfqB6Kt';
-    private $provider = Provider::WECHAT;
-    private $device = Device::WEB;
-    private $bank = Bank::ABOC;
+    private $channel   = Provider::WECHAT;
+    private $bank      = Bank::ABOC;
+    private $device    = Device::WEB;
 
     public function testDigitalPaymentOrder()
     {
         $tradeNo = (string)time();
         $payment = new DigitalPayment($this->appId, $this->appSecret);
 
-        $result = $payment->order($tradeNo, $this->provider, 100, 1, $this->device, '127.0.0.1', 'http://www.wechat.com');
+        $result = $payment->order($tradeNo, $this->channel, 100, 1, $this->device, '127.0.0.1', 'http://www.wechat.com');
 
         $this->assertEquals('0000', $result['code']);
 
@@ -35,7 +35,7 @@ class Test extends PHPUnit_Framework_TestCase
     {
         $payment = new DigitalPayment($this->appId, $this->appSecret);
 
-        $result = $payment->check($tradeNo, $this->provider);
+        $result = $payment->check($tradeNo, $this->channel);
 
         $this->assertEquals('0000', $result['code']);
     }

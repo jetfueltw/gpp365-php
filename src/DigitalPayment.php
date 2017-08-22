@@ -11,7 +11,7 @@ class DigitalPayment extends Payment
 
     /**
      * @param string $tradeNo
-     * @param int $provider
+     * @param int $channel
      * @param float $amount
      * @param int $userId
      * @param int $device
@@ -19,11 +19,11 @@ class DigitalPayment extends Payment
      * @param string $notifyUrl
      * @return array
      */
-    public function order($tradeNo, $provider, $amount, $userId, $device, $ip, $notifyUrl)
+    public function order($tradeNo, $channel, $amount, $userId, $device, $ip, $notifyUrl)
     {
         $payload = $this->signPayload([
             'tradeNo'    => $tradeNo,
-            'payType'    => $provider,
+            'payType'    => $channel,
             'amount'     => $amount,
             'curType'    => 'CNY',
             'userId'     => $userId,

@@ -2,7 +2,7 @@
     "name": "jetfueltw/gpp365-php",
     "description": "gpp365 payment agent for china popular payment",
     "keywords": ["payment", "agent", "china"],
-    "license": "MIT",
+    "license": "Apache-2.0",
     "type": "library",
     "authors": [
         {

@@ -5,46 +5,40 @@ namespace Jetfuel\Gpp365;
 class Signature
 {
     /**
+     * Generate signature.
+     *
      * @param array $payload
-     * @param string $secret
+     * @param string $secretKey
      * @return string
      */
-    public static function generate(array $payload, $secret)
+    public static function generate(array $payload, $secretKey)
     {
-        $baseString = self::buildParameterString($payload).'key='.$secret;
+        $baseString = self::buildBaseString($payload).'&key='.$secretKey;
 
         return self::md5Hash($baseString);
     }
 
     /**
      * @param array $payload
-     * @param string $secret
+     * @param string $secretKey
+     * @param string $signature
      * @return bool
      */
-    public static function validate(array $payload, $secret)
+    public static function validate(array $payload, $secretKey, $signature)
     {
-        if (!isset($payload['sign'])) {
-            return false;
-        }
-
-        $signature = $payload['sign'];
-        unset($payload['sign']);
-
-        $baseString = self::buildParameterString($payload).'key='.$secret;
-
-        return self::md5Hash($baseString) === $signature;
+        return self::generate($payload, $secretKey) === $signature;
     }
 
-    private static function buildParameterString(array $parameters)
+    private static function buildBaseString(array $payload)
     {
-        ksort($parameters);
+        ksort($payload);
 
-        $parameterString = '';
-        foreach ($parameters as $key => $value) {
-            $parameterString .= $key.'='.$value.'&';
+        $baseString = '';
+        foreach ($payload as $key => $value) {
+            $baseString .= $key.'='.$value.'&';
         }
 
-        return $parameterString;
+        return rtrim($baseString, '&');
     }
 
     private static function md5Hash($data)

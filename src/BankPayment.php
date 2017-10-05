@@ -2,50 +2,50 @@
 
 namespace Jetfuel\Gpp365;
 
+use Jetfuel\Gpp365\Constants\Device;
+
 class BankPayment extends Payment
 {
-    public function __construct($appId, $appSecret, $baseApiUrl = null)
+    const BASE_API_URL = 'https://test-apiproxy.gpp365.net/';
+    const CUR_TYPE     = 'CNY';
+    const USER_ID      = '1';
+    const DEVICE_TYPE  = Device::WEB;
+
+    /**
+     * BankPayment constructor.
+     *
+     * @param string $merchantId
+     * @param string $secretKey
+     * @param null|string $baseApiUrl
+     */
+    public function __construct($merchantId, $secretKey, $baseApiUrl = null)
     {
-        parent::__construct($appId, $appSecret, $baseApiUrl);
+        $baseApiUrl = $baseApiUrl === null ? self::BASE_API_URL : $baseApiUrl;
+
+        parent::__construct($merchantId, $secretKey, $baseApiUrl);
     }
 
     /**
      * @param string $tradeNo
      * @param int $bank
      * @param float $amount
-     * @param int $userId
-     * @param int $device
-     * @param string $ip
+     * @param string $clientIp
      * @param string $notifyUrl
      * @return string
      */
-    public function order($tradeNo, $bank, $amount, $userId, $device, $ip, $notifyUrl)
+    public function order($tradeNo, $bank, $amount, $clientIp, $notifyUrl)
     {
         $payload = $this->signPayload([
             'tradeNo'       => $tradeNo,
             'bankSwiftCode' => $bank,
             'amount'        => $amount,
-            'curType'       => 'CNY',
-            'userId'        => $userId,
-            'deviceType'    => $device,
-            'ip'            => $ip,
+            'curType'       => self::CUR_TYPE,
+            'userId'        => self::USER_ID,
+            'deviceType'    => self::DEVICE_TYPE,
+            'ip'            => $clientIp,
             'notifyUrl'     => $notifyUrl,
         ]);
 
         return $this->httpClient->post('pay/bank/v1', $payload);
-    }
-
-    /**
-     * @param string $tradeNo
-     * @return array
-     */
-    public function check($tradeNo)
-    {
-        $payload = $this->signPayload([
-            'tradeNo' => $tradeNo,
-            'payType' => 3,
-        ]);
-
-        return json_decode($this->httpClient->post('query/v1', $payload), true);
     }
 }

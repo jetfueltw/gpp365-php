@@ -14,24 +14,38 @@ class CurlHttpClient implements HttpClientInterface
      */
     private $client;
 
+    /**
+     * CurlHttpClient constructor.
+     *
+     * @param string $baseUrl
+     */
     public function __construct($baseUrl)
     {
-        $this->baseUrl = $baseUrl;
+        $this->baseUrl = rtrim($baseUrl, '/').'/';
         $this->client = curl_init();
     }
 
+    /**
+     * POST request.
+     *
+     * @param string $uri
+     * @param array $data
+     * @return string
+     */
     public function post($uri, array $data)
     {
         $dataString = json_encode($data);
+
+        $headers = [
+            'Content-Type: application/json',
+            'Content-Length: '.strlen($dataString),
+        ];
 
         curl_setopt_array($this->client, [
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST  => 'POST',
             CURLOPT_URL            => $this->baseUrl.$uri,
-            CURLOPT_HTTPHEADER     => [
-                'Content-Type: application/json',
-                'Content-Length: '.strlen($dataString),
-            ],
+            CURLOPT_HTTPHEADER     => $headers,
             CURLOPT_POSTFIELDS     => $dataString,
         ]);
 

@@ -25,7 +25,7 @@ class Bank
     const CMBC = 'CMBC';
 
     /**
-     * 上海浦東發展銀行
+     * 浦發銀行
      */
     const SPDB = 'SPDB';
 
@@ -35,7 +35,7 @@ class Bank
     const EVER = 'EVER';
 
     /**
-     * 廣東發展銀行
+     * 廣發銀行
      */
     const GDBK = 'GDBK';
 

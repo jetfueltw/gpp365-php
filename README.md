@@ -20,14 +20,14 @@ composer require jetfueltw/gpp365-php
 $merchantId = '123XXXXXXXX86'; // 商家號
 $secretKey = 'XXXXXXXXXX'; // md5 密鑰
 $tradeNo = '20170101235959XXX'; // 商家產生的唯一訂單號
-$channel = Channel::WECHAT; // 第三方支付，支援微信支付、QQ錢包、支付寶
-$amount = 100.00; // 下單支付金額
+$channel = Channel::WECHAT; // 支付通道，支援微信支付、QQ錢包、支付寶
+$amount = 100.00; // 消費金額 (元)
 $clientIp = 'XXX.XXX.XXX.XXX'; // 消費者端 IP 位址
-$notifyUrl = 'https://XXX.XXX.XXX'; // 交易完成後通知接口
+$notifyUrl = 'https://XXX.XXX.XXX'; // 交易完成後異步通知接口
 ```
 ```
 $payment = new DigitalPayment($merchantId, $secretKey);
-$result = $digitalPayment->order($tradeNo, $channel, $amount, $clientIp, $notifyUrl);
+$result = $payment->order($tradeNo, $channel, $amount, $clientIp, $notifyUrl);
 ```
 ```
 Result:
@@ -35,12 +35,12 @@ Result:
     'code' => '0000'
     'message' => '操作成功'
     'data' => [
-        'merchant' => '123XXXXXXXX86' // 應用編號
-        'tradeNo' => '20170101235959XXX' // 商家訂單號
-        'ordernumber' => '123XXXXXXXXXXXXXX890' // 金流平台訂單號
+        'merchant' => '123XXXXXXXX86' // 商家號
+        'tradeNo' => '20170101235959XXX' // 商家產生的唯一訂單號
+        'ordernumber' => '123XXXXXXXXXXXXXX890' // 聚合支付平台訂單號
         'payType' => '1' // 交易類型 1.WECHAT、2.ALIPAY、4.QQ
-        'qrcode' => 'weixin://wxpay/bizpayurl?pr=XXXXXXX' // 二維碼網址
-        'amount' => '100.00' // 交易金額
+        'qrcode' => 'weixin://wxpay/bizpayurl?pr=XXXXXXX' // 支付網址
+        'amount' => '100.00' // 消費金額 (元)
         'curType' => 'CNY' // 交易幣別
         'sign' => '946XXXXXXXXXXXXXXXXXXXXXXXXXX008' // 簽名
     ]
@@ -51,17 +51,20 @@ Result:
 
 消費者支付成功後，平台會發出 HTTP POST 請求到你下單時填的 $notifyUrl。
 
+* 商家必需正確處理重複通知的情況。
+* 務必使用 `NotifyWebhook@verifyNotifyPayload` 驗證簽證是否正確。
+
 ```
 Post Data:
 [
     'code' => '0000'
     'message' => '操作成功'
     'data' => [
-        'merchant' => '123XXXXXXXX86' // 應用編號
-        'tradeNo' => '20170101235959XXX' // 商家訂單號
-        'ordernumber' => '123XXXXXXXXXXXXXX890' // 金流平台訂單號
+        'merchant' => '123XXXXXXXX86' // 商家號
+        'tradeNo' => '20170101235959XXX' // 商家產生的唯一訂單號
+        'ordernumber' => '123XXXXXXXXXXXXXX890' // 聚合支付平台訂單號
         'payType' => '1' // 交易類型 1.WECHAT、2.ALIPAY、4.QQ
-        'amount' => '100.00' // 交易金額
+        'amount' => '100.00' // 消費金額 (分)
         'curType' => 'CNY' // 交易幣別
         'status' => '1' // 訂單狀態 0.處理中、1.交易成功、2.交易失敗
         'tradeTime' => '2017-08-01 09:00:00' // 交易時間
@@ -90,17 +93,35 @@ Result:
     'code' => '0000'
     'message' => '操作成功'
     'data' => [
-        'merchant' => '123XXXXXXXX86' // 應用編號
-        'tradeNo' => '20170101235959XXX' // 交易編號
-        'ordernumber' => '123XXXXXXXXXXXXXX890' // 金流平台訂單號
+        'merchant' => '123XXXXXXXX86' // 商家號
+        'tradeNo' => '20170101235959XXX' // 商家產生的唯一訂單號
+        'ordernumber' => '123XXXXXXXXXXXXXX890' // 聚合支付平台訂單號
         'payType' => '1' // 交易類型 1.WECHAT、2.ALIPAY、4.QQ
-        'amount' => '100.00' // 交易金額
+        'amount' => '100.00' // 消費金額 (元)
         'curType' => 'CNY' // 交易幣別
         'status' => '1' // 訂單狀態 0.處理中、1.交易成功、2.交易失敗
         'tradeTime' => '2017-08-01 09:00:00' // 交易時間
         'sign' => '946XXXXXXXXXXXXXXXXXXXXXXXXXX008' // 簽名
     ]
 ]
+```
+
+### 掃碼支付訂單支付成功查詢
+
+使用商家訂單號查詢單筆訂單是否支付成功。
+
+```
+$merchantId = '1XXXXXXX1'; // 商家號
+$secretKey = 'XXXXXXXXXXXXXXX'; // md5 密鑰
+$tradeNo = '20170101235959XXX'; // 商家產生的唯一訂單號
+```
+```
+$tradeQuery = new TradeQuery($merchantId, $secretKey);
+$result = $tradeQuery->isPaid($tradeNo);
+```
+```
+Result:
+bool(true|false)
 ```
 
 ### 網銀支付下單
@@ -112,13 +133,13 @@ $merchantId = '123XXXXXXXX86'; // 商家號
 $secretKey = 'XXXXXXXXXX'; // md5 密鑰
 $tradeNo = '20170101235959XXX'; // 商家產生的唯一訂單號
 $bank = Bank::ABOC; // 銀行編號
-$amount = 100.00; // 下單支付金額
+$amount = 100.00; // 消費金額 (元)
 $clientIp = 'XXX.XXX.XXX.XXX'; // 消費者端 IP 位址
-$notifyUrl = 'https://XXX.XXX.XXX'; // 交易完成後通知接口
+$notifyUrl = 'https://XXX.XXX.XXX'; // 交易完成後異步通知接口
 ```
 ```
 $payment = new BankPayment($merchantId, $secretKey);
-$result = $digitalPayment->order($tradeNo, $bank, $amount, $clientIp, $notifyUrl);
+$result = $payment->order($tradeNo, $bank, $amount, $clientIp, $notifyUrl);
 ```
 ```
 Result:
@@ -129,17 +150,20 @@ Result:
 
 消費者支付成功後，平台會發出 HTTP POST 請求到你下單時填的 $notifyUrl。
 
+* 商家必需正確處理重複通知的情況。
+* 務必使用 `NotifyWebhook@verifyNotifyPayload` 驗證簽證是否正確。
+
 ```
 Post Data:
 [
     'code' => '0000'
     'message' => '操作成功'
     'data' => [
-        'merchant' => '123XXXXXXXX86' // 應用編號
-        'tradeNo' => '20170101235959XXX' // 商家訂單號
-        'ordernumber' => '123XXXXXXXXXXXXXX890' // 金流平台訂單號
+        'merchant' => '123XXXXXXXX86' // 商家號
+        'tradeNo' => '20170101235959XXX' // 商家產生的唯一訂單號
+        'ordernumber' => '123XXXXXXXXXXXXXX890' // 聚合支付平台訂單號
         'payType' => '3' // 交易類型，固定值 3
-        'amount' => '100.00' // 交易金額
+        'amount' => '100.00' // 消費金額 (分)
         'curType' => 'CNY' // 交易幣別
         'status' => '1' // 訂單狀態 0.處理中、1.交易成功、2.交易失敗
         'tradeTime' => '2017-08-01 09:00:00' // 交易時間
@@ -167,15 +191,33 @@ Result:
     'code' => '0000'
     'message' => '操作成功'
     'data' => [
-        'merchant' => '123XXXXXXXX86' // 應用編號
-        'tradeNo' => '20170101235959XXX' // 交易編號
-        'ordernumber' => '123XXXXXXXXXXXXXX890' // 金流平台訂單號
+        'merchant' => '123XXXXXXXX86' // 商家號
+        'tradeNo' => '20170101235959XXX' // 商家產生的唯一訂單號
+        'ordernumber' => '123XXXXXXXXXXXXXX890' // 聚合支付平台訂單號
         'payType' => '3' // 交易類型，固定值 3
-        'amount' => '100.00' // 交易金額
+        'amount' => '100.00' // 消費金額 (元)
         'curType' => 'CNY' // 交易幣別
         'status' => '1' // 訂單狀態 0.處理中、1.交易成功、2.交易失敗
         'tradeTime' => '2017-08-01 09:00:00' // 交易時間
         'sign' => '946XXXXXXXXXXXXXXXXXXXXXXXXXX008' // 簽名
     ]
 ]
+```
+
+### 掃碼支付訂單支付成功查詢
+
+使用商家訂單號查詢單筆訂單是否支付成功。
+
+```
+$merchantId = '1XXXXXXX1'; // 商家號
+$secretKey = 'XXXXXXXXXXXXXXX'; // md5 密鑰
+$tradeNo = '20170101235959XXX'; // 商家產生的唯一訂單號
+```
+```
+$tradeQuery = new TradeQuery($merchantId, $secretKey);
+$result = $tradeQuery->isPaid($tradeNo);
+```
+```
+Result:
+bool(true|false)
 ```

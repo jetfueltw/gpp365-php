@@ -27,6 +27,22 @@ trait NotifyWebhook
     }
 
     /**
+     * Verify notify request's signature and parse payload.
+     *
+     * @param array $payload
+     * @param string $secretKey
+     * @return array|null
+     */
+    public function parseNotifyPayload(array $payload, $secretKey)
+    {
+        if (!$this->verifyNotifyPayload($payload, $secretKey)) {
+            return null;
+        }
+
+        return $payload;
+    }
+
+    /**
      * Response content for successful notify.
      *
      * @return string

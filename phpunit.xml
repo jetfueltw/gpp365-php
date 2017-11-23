@@ -10,8 +10,12 @@
          stopOnFailure="false"
          syntaxCheck="false">
     <testsuites>
-        <testsuite name="Test Suite">
+        <testsuite name="Unit Test">
             <directory suffix=".php">./tests/</directory>
         </testsuite>
     </testsuites>
+    <php>
+        <env name="MERCHANT_ID" value="1496219556263"/>
+        <env name="SECRET_KEY" value="UigNOCfqB6Kt"/>
+    </php>
 </phpunit>

@@ -6,10 +6,9 @@ use Jetfuel\Gpp365\Constants\Device;
 
 class BankPayment extends Payment
 {
-    const BASE_API_URL = 'https://test-apiproxy.gpp365.net/';
-    const CUR_TYPE     = 'CNY';
-    const USER_ID      = '1';
-    const DEVICE_TYPE  = Device::WEB;
+    const CUR_TYPE    = 'CNY';
+    const USER_ID     = '1';
+    const DEVICE_TYPE = Device::WEB;
 
     /**
      * BankPayment constructor.
@@ -20,8 +19,6 @@ class BankPayment extends Payment
      */
     public function __construct($merchantId, $secretKey, $baseApiUrl = null)
     {
-        $baseApiUrl = $baseApiUrl === null ? self::BASE_API_URL : $baseApiUrl;
-
         parent::__construct($merchantId, $secretKey, $baseApiUrl);
     }
 

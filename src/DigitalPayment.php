@@ -3,13 +3,15 @@
 namespace Jetfuel\Gpp365;
 
 use Jetfuel\Gpp365\Constants\Device;
+use Jetfuel\Gpp365\Traits\ResultParser;
 
 class DigitalPayment extends Payment
 {
-    const BASE_API_URL = 'https://test-apiproxy.gpp365.net/';
-    const CUR_TYPE     = 'CNY';
-    const USER_ID      = '1';
-    const DEVICE_TYPE  = Device::WEB;
+    use ResultParser;
+
+    const CUR_TYPE    = 'CNY';
+    const USER_ID     = '1';
+    const DEVICE_TYPE = Device::WEB;
 
     /**
      * DigitalPayment constructor.
@@ -20,8 +22,6 @@ class DigitalPayment extends Payment
      */
     public function __construct($merchantId, $secretKey, $baseApiUrl = null)
     {
-        $baseApiUrl = $baseApiUrl === null ? self::BASE_API_URL : $baseApiUrl;
-
         parent::__construct($merchantId, $secretKey, $baseApiUrl);
     }
 
@@ -46,6 +46,6 @@ class DigitalPayment extends Payment
             'notifyUrl'  => $notifyUrl,
         ]);
 
-        return json_decode($this->httpClient->post('pay/qrcode/v1', $payload), true);
+        return $this->parseResponse($this->httpClient->post('pay/qrcode/v1', $payload));
     }
 }

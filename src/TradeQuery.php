@@ -2,9 +2,11 @@
 
 namespace Jetfuel\Gpp365;
 
+use Jetfuel\Gpp365\Traits\ResultParser;
+
 class TradeQuery extends Payment
 {
-    const BASE_API_URL = 'https://test-apiproxy.gpp365.net/';
+    use ResultParser;
 
     /**
      * DigitalPayment constructor.
@@ -15,15 +17,15 @@ class TradeQuery extends Payment
      */
     public function __construct($merchantId, $secretKey, $baseApiUrl = null)
     {
-        $baseApiUrl = $baseApiUrl === null ? self::BASE_API_URL : $baseApiUrl;
-
         parent::__construct($merchantId, $secretKey, $baseApiUrl);
     }
 
     /**
+     * Find Order by trade number.
+     *
      * @param string $tradeNo
      * @param int $channel
-     * @return array
+     * @return array|null
      */
     public function find($tradeNo, $channel = 3)
     {
@@ -32,6 +34,30 @@ class TradeQuery extends Payment
             'payType' => $channel,
         ]);
 
-        return json_decode($this->httpClient->post('query/v1', $payload), true);
+        $order = $this->parseResponse($this->httpClient->post('query/v1', $payload));
+
+        if ($order['code'] !== '0000') {
+            return null;
+        }
+
+        return $order;
+    }
+
+    /**
+     * Is order already paid.
+     *
+     * @param string $tradeNo
+     * @param int $channel
+     * @return bool
+     */
+    public function isPaid($tradeNo, $channel = 3)
+    {
+        $order = $this->find($tradeNo, $channel);
+
+        if ($order === null || !isset($order['data']['status']) || $order['data']['status'] !== '1') {
+            return false;
+        }
+
+        return true;
     }
 }

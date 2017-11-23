@@ -6,7 +6,9 @@ use Jetfuel\Gpp365\HttpClient\GuzzleHttpClient;
 
 class Payment
 {
-    const TIME_ZONE   = 'Asia/Shanghai';
+    const BASE_API_URL = 'https://test-apiproxy.gpp365.net/';
+    const TIME_ZONE    = 'Asia/Shanghai';
+    const TIME_FORMAT  = 'Y-m-d H:i:s';
 
     /**
      * @var string
@@ -35,11 +37,11 @@ class Payment
      * @param string $secretKey
      * @param string $baseApiUrl
      */
-    protected function __construct($merchantId, $secretKey, $baseApiUrl)
+    protected function __construct($merchantId, $secretKey, $baseApiUrl = null)
     {
         $this->merchantId = $merchantId;
         $this->secretKey = $secretKey;
-        $this->baseApiUrl = $baseApiUrl;
+        $this->baseApiUrl = $baseApiUrl === null ? self::BASE_API_URL : $baseApiUrl;
 
         $this->httpClient = new GuzzleHttpClient($this->baseApiUrl);
     }
@@ -66,6 +68,6 @@ class Payment
      */
     protected function getCurrentTime()
     {
-        return (new \DateTime('now', new \DateTimeZone(self::TIME_ZONE)))->format('Y-m-d H:i:s');
+        return (new \DateTime('now', new \DateTimeZone(self::TIME_ZONE)))->format(self::TIME_FORMAT);
     }
 }

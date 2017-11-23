@@ -25,5 +25,10 @@
     "psr-4": {
       "Jetfuel\\Gpp365\\": "src"
     }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests"
+    }
   }
 }

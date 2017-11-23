@@ -26,6 +26,8 @@ class DigitalPayment extends Payment
     }
 
     /**
+     * Create digital payment order.
+     *
      * @param string $tradeNo
      * @param int $channel
      * @param float $amount

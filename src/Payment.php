@@ -35,7 +35,7 @@ class Payment
      *
      * @param string $merchantId
      * @param string $secretKey
-     * @param string $baseApiUrl
+     * @param null|string $baseApiUrl
      */
     protected function __construct($merchantId, $secretKey, $baseApiUrl = null)
     {
@@ -49,10 +49,10 @@ class Payment
     /**
      * Sign request payload.
      *
-     * @param $payload
+     * @param array $payload
      * @return array
      */
-    protected function signPayload($payload)
+    protected function signPayload(array $payload)
     {
         $payload['merchant'] = $this->merchantId;
         $payload['reqTime'] = $this->getCurrentTime();
